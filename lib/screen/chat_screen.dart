@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go/widgets/chat/messages.dart';
+import 'package:go/widgets/chat/new_message.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -7,31 +10,25 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder(
-        builder: ((context, snapshot) => snapshot.connectionState ==
-                ConnectionState.waiting
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : ListView.builder(
-                itemCount: (snapshot.data! as QuerySnapshot).docs.length,
-                itemBuilder: (ctx, index) => Container(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                      (snapshot.data! as QuerySnapshot).docs[index]["text"]),
-                ),
-              )),
-        stream: FirebaseFirestore.instance
-            .collection('chats/iUpUhT6LePWHskZcQu7j/messages')
-            .snapshots(),
+      appBar: AppBar(
+        title: const Text('Chat'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+            },
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          FirebaseFirestore.instance
-              .collection('chats/iUpUhT6LePWHskZcQu7j/messages')
-              .add({'text': 'Hello World'});
-        },
+      body: Container(
+        padding: const EdgeInsets.all(5),
+        child: Column(
+          children: const [
+            Expanded(child: Messages()),
+            NewMessage(),
+          ],
+        ),
       ),
     );
   }

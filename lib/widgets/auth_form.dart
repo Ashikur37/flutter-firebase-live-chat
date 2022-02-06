@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
-  const AuthForm({Key? key}) : super(key: key);
-
+  const AuthForm({Key? key, required this.onSubmit}) : super(key: key);
+  final Function onSubmit;
   @override
   _AuthFormState createState() => _AuthFormState();
 }
@@ -15,6 +16,14 @@ class _AuthFormState extends State<AuthForm> {
   void _trySubmit() {
     if (_formKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
+      widget.onSubmit(_email, _password, _username, true);
+    }
+  }
+
+  void _trySignup() {
+    if (_formKey.currentState!.validate()) {
+      FocusScope.of(context).unfocus();
+      widget.onSubmit(_email, _password, _username, false);
     }
   }
 
@@ -63,11 +72,15 @@ class _AuthFormState extends State<AuthForm> {
                     height: 12,
                   ),
                   ElevatedButton(
-                    onPressed: () {},
-                    child: const Text("Login"),
+                    onPressed: _trySubmit,
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.pinkAccent),
+                    ),
+                    child: const Text("login"),
                   ),
                   TextButton(
-                    onPressed: _trySubmit,
+                    onPressed: _trySignup,
                     child: const Text("Signup"),
                   ),
                 ],
